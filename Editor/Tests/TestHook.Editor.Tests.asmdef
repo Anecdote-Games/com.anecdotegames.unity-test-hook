@@ -1,0 +1,18 @@
+{
+    "name": "TestHook.Editor.Tests",
+    "rootNamespace": "Anecdote.TestHook.Editor.Tests",
+    "references": [
+        "GUID:fa1b904b11b325b4c8628cb0da36b1e8"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

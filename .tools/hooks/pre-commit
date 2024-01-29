@@ -1,0 +1,115 @@
+#!/usr/bin/env python
+import pathlib
+import os.path
+from os.path import exists
+import os
+import time
+import xml.etree.ElementTree as ET
+import sys
+import shutil
+
+# ========= #
+# Variables #
+# ========= #
+
+# resolves to the /.git/hooks/ folder that this hook is installed in
+hooks_folder_path = pathlib.Path(__file__).resolve()
+results_file_path = os.path.join(hooks_folder_path, 'testResults.xml')
+request_file_path = os.path.join(hooks_folder_path, 'test.request')
+
+log_num=0
+
+# ========= #
+# Functions #
+# ========= #
+
+def log(msg):
+    print(log_num + ". " + msg)
+    log_num++
+
+def tests_are_fresh():
+    file_life = time.time() - os.path.getmtime(file_path)
+    return file_life < 60
+
+def request_test_run():
+    try:
+        f = open(request_file_path, "w")
+        f.close();
+    except IOError:
+        log("IO ERROR: Unable to create request file: " + IOError)
+        
+    time.sleep(6)
+    
+    if tests_are_fresh():
+        return
+    else:
+        log("ERROR: Failed to refresh test results, is your Unity Editor running and not interrupted by a dialog box?")
+        sys.exit(1)
+
+# ==== #
+# Main #
+# ==== #
+log("Pre-commit script checking test results...")
+
+has_discovered_tests_file = exists(file_path)
+
+no_test_failed = False
+all_tests_run = False
+platform_is_edit_mode = False
+
+# If tests file doesn't exist, request new tests
+if not os.path.exists(file_path):
+    log("Could not find test file at " + file_path + ", running fresh tests...")
+    request_test_run()
+    
+# Tests must be run at least 60 seconds before commiting the tests file
+elif not tests_are_fresh():
+    log("Test results are stale, running fresh tests...")
+    request_test_run()
+
+try:
+    # Ensure the file can be read not just opened
+    with open(file_path) as f:
+        lines = f.readlines()
+
+    # Parse the xml tree
+    tree = ET.parse(file_path)
+    root = tree.getroot()
+    
+    for element in root.iter(tag='properties'):
+        for value in element:
+            if value.attrib["value"] == "EditMode":
+                platform_is_edit_mode = True
+    
+    if not platform_is_edit_mode:
+        log("ERROR: Could not find 'EditMode' in test results, did you run Play Mode tests instead?")
+    else:
+
+        # Find the pass state of the entire suite
+        for root_element in root.iter(tag='test-suite'):
+            #if root_element.attrib["name"] == "Outpost":
+            total_tests_in_suite = int(root_element.attrib["testcasecount"])
+            total_tests_run = int(root_element.attrib["total"])
+            total_tests_passed = int(root_element.attrib["passed"])
+            total_tests_ignored = int(root_element.attrib["skipped"])
+            total_tests_failed = int(root_element.attrib["failed"])
+            tests_passed_or_ignored = total_tests_passed + total_tests_ignored
+            all_tests_run = (total_tests_in_suite == total_tests_run)
+            no_test_failed = total_tests_failed == 0
+        
+        if not all_tests_run:
+            log(f"ERROR: There are {total_tests_in_suite} total tests but only {total_tests_run} were run. Please run the full suite")
+            
+        if not no_test_failed:
+            log(f"{total_tests_failed} tests failed. Check the Unity Test Runner for details.")
+                    
+except IOError:
+    log("IO ERROR: Cannot parse test results file: " + IOError)
+
+# Exit with the correct system code for the commit to proceed or cancel
+if no_test_failed and all_tests_run and platform_is_edit_mode:
+    log("All checks have passed, commit was successful!")
+    sys.exit()
+else:
+    log("Check was not successful, please fix the above issue(s) before committing.")
+    sys.exit(1)
