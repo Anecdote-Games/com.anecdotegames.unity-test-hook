@@ -90,12 +90,17 @@ namespace Anecdote.TestHook.Editor
 			return null;
 		}
 
-		[MenuItem("Anecdote/Debug/Print Package Directory")]
-		static void TestGitRoot()
+		public static DirectoryInfo GetPackageDirInfo()
 		{
 			var pkgFinder = new PackageDirectoryFinder();
 
-			Debug.Log($"PackageDirectoryFinder successfully found: {pkgFinder.dInfo}");
+			return pkgFinder.dInfo;
+		}
+
+		[MenuItem("Anecdote/Debug/Print Package Directory")]
+		static void TestGitRoot()
+		{
+			Debug.Log($"PackageDirectoryFinder successfully found: {GetPackageDirInfo()}");
 		}
 	}
 }

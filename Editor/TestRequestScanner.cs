@@ -40,9 +40,16 @@ namespace Anecdote.TestHook.Editor
 		{
 			api = ScriptableObject.CreateInstance<TestRunnerApi>();
 
-			gitFinder = new GitDirectoryFinder();
+			try
+			{
+				gitFinder = new GitDirectoryFinder();
 
-			EditorCoroutineUtility.StartCoroutine(DoRecurringScan(gitFinder.hooksDir), this);
+				EditorCoroutineUtility.StartCoroutine(DoRecurringScan(gitFinder.hooksDir), this);
+			}
+			catch (Exception e)
+			{
+				Debug.LogError($"Could not init TestRequestScanner. Reason: {e}");
+			}
 		}
 
 		IEnumerator DoRecurringScan(DirectoryInfo dInfo)

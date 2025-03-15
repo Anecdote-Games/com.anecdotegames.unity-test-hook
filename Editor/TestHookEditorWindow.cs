@@ -77,6 +77,20 @@ namespace Anecdote.TestHook.Editor
 					hookInstaller.InstallHooks();
 				}
 			}
+
+			GUILayout.Label($"Git Working Dir Path: {gitFinder.dInfo}");
+
+			if (GUILayout.Button("Open Git Working Dir path..."))
+			{
+				EditorUtility.RevealInFinder(gitFinder.dInfo.FullName);
+			}
+
+			GUILayout.Label($"Test Hook Package Path: {pkgFinder.dInfo}");
+
+			if (GUILayout.Button("Open Test Hook Package path.."))
+			{
+				EditorUtility.RevealInFinder(pkgFinder.dInfo.FullName);
+			}
 		}
 	}
 }

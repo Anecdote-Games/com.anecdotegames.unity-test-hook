@@ -102,12 +102,17 @@ namespace Anecdote.TestHook.Editor
 			return null;
 		}
 
-		[MenuItem("Anecdote/Debug/Print Git Directory")]
-		static void TestGitRoot()
+		public static DirectoryInfo GetGitWorkDirInfo()
 		{
 			var gitFinder = new GitDirectoryFinder();
 
-			Debug.Log($"GitDirectoryFinder successfully found: {gitFinder.dInfo}");
+			return gitFinder.dInfo;
+		}
+
+		[MenuItem("Anecdote/Debug/Print Git Directory")]
+		static void TestGitRoot()
+		{
+			Debug.Log($"GitDirectoryFinder successfully found: {GetGitWorkDirInfo()}");
 		}
 	}
 }

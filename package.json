@@ -1,6 +1,6 @@
 {
   "name": "com.anecdotegames.unity-test-hook",
-  "version": "2024.1.20",
+  "version": "2025.3.15",
   "displayName": "AG Test Hook",
   "description": "Enforces unit tests passing before permitting a Git commit",
   "unity": "2019.1",
@@ -8,15 +8,15 @@
   "changelogUrl": "https://github.com/Anecdote-Games/com.anecdotegames.unity-test-hook",
   "licensesUrl": "https://github.com/Anecdote-Games/com.anecdotegames.unity-test-hook/LICENSE.md",
   "dependencies": {
-	  "com.unity.editorcoroutines": "1.0.0"
+    "com.unity.editorcoroutines": "1.0.0"
   },
   "keywords": [
     "unit",
-	"test",
-	"precommit",
+    "test",
+    "precommit",
     "hook",
     "validation",
-	"automation"
+    "automation"
   ],
   "author": {
     "name": "Anecdote Games",
